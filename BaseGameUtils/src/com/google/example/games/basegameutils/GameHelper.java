@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -54,7 +53,7 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
          * display an error message unless a call to @link{GamesHelper#hasSignInError}
          * indicates that an error indeed occurred.
          */
-        void onSignInFailed();
+        void onSignInFailed(int result);
 
         /** Called when sign-in succeeds. */
         void onSignInSucceeded();
@@ -447,10 +446,10 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
         if (result != ConnectionResult.SUCCESS) {
             // Nope.
             debugLog("Google Play services not available. Show error dialog.");
-            Dialog errorDialog = getErrorDialog(result);
-            errorDialog.show();
+            //Dialog errorDialog = getErrorDialog(result);
+            //errorDialog.show();
             if (mListener != null)
-                mListener.onSignInFailed();
+                mListener.onSignInFailed(result);
             return;
         }
 
@@ -643,7 +642,7 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
             debugLog("onConnectionFailed: since user didn't initiate sign-in, failing now.");
             mConnectionResult = result;
             if (mListener != null) {
-                mListener.onSignInFailed();
+                mListener.onSignInFailed(result.getErrorCode());
             }
             return;
         }
@@ -700,13 +699,13 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
                 ((mConnectionResult == null) ? "(no connection result)" :
                         ("Status code: " + mConnectionResult.getErrorCode())));
 
-        Dialog errorDialog = null;
+        //Dialog errorDialog = null;
         if (mConnectionResult != null) {
             // get error dialog for that specific problem
-            errorDialog = getErrorDialog(mConnectionResult.getErrorCode());
-            errorDialog.show();
+            //errorDialog = getErrorDialog(mConnectionResult.getErrorCode());
+            //errorDialog.show();
             if (mListener != null) {
-                mListener.onSignInFailed();
+                mListener.onSignInFailed(mConnectionResult.getErrorCode());
             }
         } else {
             // this is a bug
@@ -725,23 +724,23 @@ public class GameHelper implements GooglePlayServicesClient.ConnectionCallbacks,
         mInvitationId = null;
         mConnectedClients = CLIENT_NONE;
         if (mListener != null) {
-            mListener.onSignInFailed();
+            mListener.onSignInFailed(ConnectionResult.SIGN_IN_REQUIRED);
         }
     }
 
     /** Returns an error dialog that's appropriate for the given error code. */
-    Dialog getErrorDialog(int errorCode) {
-        debugLog("Making error dialog for error: " + errorCode);
-        Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity,
-                RC_UNUSED, null);
-
-        if (errorDialog != null)
-            return errorDialog;
-
-        // as a last-resort, make a sad "unknown error" dialog.
-        return (new AlertDialog.Builder(getContext())).setMessage(mUnknownErrorMessage)
-                .setNeutralButton(android.R.string.ok, null).create();
-    }
+//    Dialog getErrorDialog(int errorCode) {
+//        debugLog("Making error dialog for error: " + errorCode);
+//        Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode, mActivity,
+//                RC_UNUSED, null);
+//
+//        if (errorDialog != null)
+//            return errorDialog;
+//        
+//        // as a last-resort, make a sad "unknown error" dialog.
+//        return (new AlertDialog.Builder(getContext())).setMessage(mUnknownErrorMessage)
+//                .setNeutralButton(android.R.string.ok, null).create();
+//    }
 
     void debugLog(String message) {
         if (mDebugLog)
